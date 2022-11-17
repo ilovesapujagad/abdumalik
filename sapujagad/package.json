@@ -1,0 +1,29 @@
+{
+  "name": "khayangan-js-func",
+  "version": "0.0.1",
+  "description": "bundle functions of khyangan mgFunc",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "base-64": "^1.0.0",
+    "body-parser": "^1.20.0",
+    "child_process": "^1.0.2",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "https": "^1.0.0",
+    "moment": "^2.29.4",
+    "nodemailer": "^6.8.0",
+    "pluralize": "^8.0.0",
+    "util": "^0.12.4",
+    "uuid": "^9.0.0"
+  }
+}
