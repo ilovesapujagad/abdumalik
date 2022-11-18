@@ -1,4 +1,7 @@
 const logger = require("./logger");
+const oracleToHdfs = require("./oracle-to-hdfs");
+const oracleToHive = require("./oracle-to-hive");
+const logCreate = require("./log-create");
 
 class FunctionEvent {
   constructor(req) {
@@ -47,4 +50,7 @@ exports.handler = (app) => {
   };
 
   app.get("/logs", (req, res) => middleware(req, res, logger));
+  app.get("/oracle-to-hdfs", (req, res) => middleware(req, res, oracleToHdfs));
+  app.get("/oracle-to-hive", (req, res) => middleware(req, res, oracleToHive));
+  app.post("/log-create", (req, res) => middleware(req, res, logCreate));
 };
