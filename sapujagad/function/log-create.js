@@ -25,7 +25,7 @@ exports.handler = async ({ app, context, callback }) => {
 
   var userId = "anonymous";
 
-  var pcsId = `U${userId}F${functionId}T${timestamp}`;
+  var pcsId = `U${userId}F${functionId}`;
 
   var queryEndpoint = `http://10.207.26.22:8886/solr/sapujagad/update/json/docs?commit=true`;
 
@@ -54,7 +54,7 @@ exports.handler = async ({ app, context, callback }) => {
     return callback(null, {
       statusCode: 200,
       message: "success",
-      logs: data,
+      process_id: pcsId,
     });
   } catch (error) {
     // console.log(error);
