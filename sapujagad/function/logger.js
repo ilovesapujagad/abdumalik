@@ -61,7 +61,7 @@ exports.handler = async ({ app, context, callback }) => {
         // id: doc.id,
         // process_id: doc.process_id[0],
         timestamp: doc.timestamp[0],
-        local_time: new Date(doc.timestamp[0]).toLocaleString(),
+        time: new Date(doc.timestamp[0]).toLocaleString(),
         log_str: doc.log[0],
       };
     });
