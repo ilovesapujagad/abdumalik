@@ -66,6 +66,19 @@ exports.handler = async ({ app, context, callback }) => {
     offset = dbQuery.toUpperCase().split("OFFSET")[1].trim();
   }
 
+  console.log(page);
+  console.log("Query: " + dbQuery);
+  
+  if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
+    return callback(null, {
+      statusCode: 400,
+      query: dbQueryOld,
+      offset: offset,
+      page: page,
+      message: "Pagination is not allowed for this query",
+    });
+  }
+
   if (
     ((query == "SELECT" && !dbQuery.toUpperCase().includes(" OFFSET ")) ||
       (limit > 50 && query == "SELECT")) &&
@@ -95,19 +108,6 @@ exports.handler = async ({ app, context, callback }) => {
       " OFFSET " +
       (pagination - 1) * 50;
     offset = (pagination - 1) * 50;
-  }
-
-  // console.log(page);
-  // console.log("Query: " + dbQuery);
-
-  if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
-    return callback(null, {
-      statusCode: 400,
-      query: dbQueryOld,
-      offset: offset,
-      page: page,
-      message: "Pagination is not allowed for this query",
-    });
   }
 
   // var dbName = "gg";
