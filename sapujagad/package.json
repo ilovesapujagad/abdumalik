@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "hive-driver": "^0.2.0",
     "axios": "^0.27.2",
     "base-64": "^1.0.0",
     "body-parser": "^1.20.0",
