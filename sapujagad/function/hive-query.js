@@ -97,18 +97,8 @@ exports.handler = async ({ app, context, callback }) => {
     offset = (pagination - 1) * 50;
   }
 
-  console.log(page);
-  console.log("Query: " + dbQuery);
-
-  if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
-    return callback(null, {
-      statusCode: 400,
-      query: dbQueryOld,
-      offset: offset,
-      page: page,
-      message: "Pagination is not allowed for this query",
-    });
-  }
+  // console.log(page);
+  // console.log("Query: " + dbQuery);
 
   // var dbName = "gg";
   // var dbQuery = "SELECT * FROM gg2022_2023 LIMIT 10";
@@ -146,6 +136,16 @@ exports.handler = async ({ app, context, callback }) => {
         await useDb.close();
         await operation.close();
         await session.close();
+
+        if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
+          return callback(null, {
+            statusCode: 400,
+            query: dbQueryOld,
+            offset: offset,
+            page: page,
+            message: "Pagination is not allowed for this query",
+          });
+        }
 
         if (
           utils.getResult(operation).getValue() &&
