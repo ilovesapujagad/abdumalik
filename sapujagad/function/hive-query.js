@@ -56,20 +56,36 @@ exports.handler = async ({ app, context, callback }) => {
   }
 
   let limit;
+  var offset = 0;
   // check if limit > 50
-  if (
-    dbQuery.toUpperCase().includes(" LIMIT ") ||
-    dbQuery.toUpperCase().includes(" limit ")
-  ) {
+  if (dbQuery.toUpperCase().includes(" LIMIT ")) {
     limit = dbQuery.toUpperCase().split("LIMIT")[1].trim();
   }
 
+  if (dbQuery.toUpperCase().includes(" OFFSET ")) {
+    offset = dbQuery.toUpperCase().split("OFFSET")[1].trim();
+  }
+
   if (
-    (query == "SELECT" && !dbQuery.toUpperCase().includes(" LIMIT ")) ||
-    (query == "SELECT" && !dbQuery.toUpperCase().includes(" OFFSET ")) ||
-    limit > 50
+    ((query == "SELECT" && !dbQuery.toUpperCase().includes(" OFFSET ")) ||
+      (limit > 50 && query == "SELECT")) &&
+    dbQuery.toUpperCase().includes(" OFFSET ")
   ) {
-    console.log("limit", `limit ${limit}`);
+    var replaceOffset = `offset ${offset}`;
+    var replaceOffsetUpper = ` OFFSET ${offset} `;
+    // apply pagination to the query 50 rows per page
+    dbQuery =
+      dbQuery.replace(replaceOffset, "").replace(replaceOffsetUpper, "") +
+      " LIMIT 50";
+
+    offset = (pagination - 1) * 50;
+  }
+
+  if (
+    ((query == "SELECT" && !dbQuery.toUpperCase().includes(" LIMIT ")) ||
+      (limit > 50 && query == "SELECT")) &&
+    !dbQuery.toUpperCase().includes(" OFFSET ")
+  ) {
     var replaceLimit = `limit ${limit}`;
     var replaceLimitUpper = ` LIMIT ${limit} `;
     // apply pagination to the query 50 rows per page
@@ -78,9 +94,21 @@ exports.handler = async ({ app, context, callback }) => {
       " LIMIT 50" +
       " OFFSET " +
       (pagination - 1) * 50;
+    offset = (pagination - 1) * 50;
   }
 
-  // console.log("Query: " + dbQuery);
+  console.log(page);
+  console.log("Query: " + dbQuery);
+
+  if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
+    return callback(null, {
+      statusCode: 400,
+      query: dbQueryOld,
+      offset: offset,
+      page: page,
+      message: "Pagination is not allowed for this query",
+    });
+  }
 
   // var dbName = "gg";
   // var dbQuery = "SELECT * FROM gg2022_2023 LIMIT 10";
@@ -123,11 +151,21 @@ exports.handler = async ({ app, context, callback }) => {
           utils.getResult(operation).getValue() &&
           utils.getResult(operation).getValue().constructor === Array
         ) {
+          if (query != "SELECT") {
+            return callback(null, {
+              statusCode: 200,
+              numFound: utils.getResult(operation).getValue().length,
+              query: dbQueryOld,
+              results: utils.getResult(operation).getValue(),
+            });
+          }
+
           return callback(null, {
             statusCode: 200,
             numFound: utils.getResult(operation).getValue().length,
             query: dbQueryOld,
             limit: 50,
+            offset: offset,
             currPage: pagination,
             results: utils.getResult(operation).getValue(),
           });
