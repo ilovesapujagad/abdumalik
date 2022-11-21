@@ -109,6 +109,7 @@ exports.handler = async ({ app, context, callback }) => {
         msg = msg[0].toUpperCase() + msg.substring(1);
         return callback(null, {
           statusCode: 400,
+          query: dbQuery,
           message: msg,
         });
       }
