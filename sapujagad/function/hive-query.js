@@ -14,7 +14,17 @@ exports.handler = async ({ app, context, callback }) => {
   const utils = new hive.HiveUtils(TCLIService_types);
 
   const { body } = context;
-  const { dbName, dbQuery } = body;
+  var { dbName, dbQuery, page } = body;
+
+  var dbQueryOld = dbQuery;
+  let pagination;
+
+  if (!page | (page < 1)) {
+    pagination = 1;
+  } else {
+    // pagination = page to int
+    pagination = parseInt(page);
+  }
 
   if (!dbName || !dbQuery) {
     return callback(null, {
@@ -44,6 +54,33 @@ exports.handler = async ({ app, context, callback }) => {
       break;
     }
   }
+
+  let limit;
+  // check if limit > 50
+  if (
+    dbQuery.toUpperCase().includes(" LIMIT ") ||
+    dbQuery.toUpperCase().includes(" limit ")
+  ) {
+    limit = dbQuery.toUpperCase().split("LIMIT")[1].trim();
+  }
+
+  if (
+    (query == "SELECT" && !dbQuery.toUpperCase().includes(" LIMIT ")) ||
+    (query == "SELECT" && !dbQuery.toUpperCase().includes(" OFFSET ")) ||
+    limit > 50
+  ) {
+    console.log("limit", `limit ${limit}`);
+    var replaceLimit = `limit ${limit}`;
+    var replaceLimitUpper = ` LIMIT ${limit} `;
+    // apply pagination to the query 50 rows per page
+    dbQuery =
+      dbQuery.replace(replaceLimit, "").replace(replaceLimitUpper, "") +
+      " LIMIT 50" +
+      " OFFSET " +
+      (pagination - 1) * 50;
+  }
+
+  // console.log("Query: " + dbQuery);
 
   // var dbName = "gg";
   // var dbQuery = "SELECT * FROM gg2022_2023 LIMIT 10";
@@ -89,14 +126,16 @@ exports.handler = async ({ app, context, callback }) => {
           return callback(null, {
             statusCode: 200,
             numFound: utils.getResult(operation).getValue().length,
-            query: dbQuery,
+            query: dbQueryOld,
+            limit: 50,
+            currPage: pagination,
             results: utils.getResult(operation).getValue(),
           });
         }
 
         return callback(null, {
           statusCode: 200,
-          query: dbQuery,
+          query: dbQueryOld,
           message: query + " success",
         });
       } catch (error) {
@@ -104,8 +143,9 @@ exports.handler = async ({ app, context, callback }) => {
         var msg =
           (errMsg.split("line")[1]
             ? errMsg.split("line")[1].substring(errMsg.indexOf(" "))
-            : errMsg.split("Line")[1].substring(errMsg.indexOf(" ") + 1)) ||
-          error;
+            : errMsg.split("Line")[1]
+            ? errMsg.split("Line")[1].substring(errMsg.indexOf(" ") + 1)
+            : errMsg) || error;
         msg = msg[0].toUpperCase() + msg.substring(1);
         return callback(null, {
           statusCode: 400,
