@@ -23,6 +23,28 @@ exports.handler = async ({ app, context, callback }) => {
     });
   }
 
+  var hiveQueries = [
+    "USE",
+    "SELECT",
+    "INSERT",
+    "CREATE",
+    "DROP",
+    "ALTER",
+    "DESCRIBE",
+    "SHOW",
+    "LOAD",
+    "WITH",
+  ];
+
+  // Check if the query is a valid Hive query
+  var query = null;
+  for (var i = 0; i < hiveQueries.length; i++) {
+    if (dbQuery.toUpperCase().startsWith(hiveQueries[i])) {
+      query = hiveQueries[i];
+      break;
+    }
+  }
+
   // var dbName = "gg";
   // var dbQuery = "SELECT * FROM gg2022_2023 LIMIT 10";
 
@@ -60,15 +82,34 @@ exports.handler = async ({ app, context, callback }) => {
         await operation.close();
         await session.close();
 
+        if (
+          utils.getResult(operation).getValue() &&
+          utils.getResult(operation).getValue().constructor === Array
+        ) {
+          return callback(null, {
+            statusCode: 200,
+            numFound: utils.getResult(operation).getValue().length,
+            query: dbQuery,
+            results: utils.getResult(operation).getValue(),
+          });
+        }
+
         return callback(null, {
           statusCode: 200,
-          message: "finished",
-          result: utils.getResult(operation).getValue(),
+          query: dbQuery,
+          message: query + " success",
         });
       } catch (error) {
+        var errMsg = error.message;
+        var msg =
+          (errMsg.split("line")[1]
+            ? errMsg.split("line")[1].substring(errMsg.indexOf(" "))
+            : errMsg.split("Line")[1].substring(errMsg.indexOf(" ") + 1)) ||
+          error;
+        msg = msg[0].toUpperCase() + msg.substring(1);
         return callback(null, {
           statusCode: 400,
-          message: error,
+          message: msg,
         });
       }
     });
