@@ -3,6 +3,9 @@ const oracleToHdfs = require("./oracle-to-hdfs");
 const oracleToHive = require("./oracle-to-hive");
 const logCreate = require("./log-create");
 const hiveQuery = require("./hive-query");
+const databasesDetails = require("./databases-details");
+const databaseDetails = require("./database-details");
+const databases = require("./databases");
 
 class FunctionEvent {
   constructor(req) {
@@ -55,4 +58,11 @@ exports.handler = (app) => {
   app.get("/oracle-to-hive", (req, res) => middleware(req, res, oracleToHive));
   app.post("/log-create", (req, res) => middleware(req, res, logCreate));
   app.post("/hive-query", (req, res) => middleware(req, res, hiveQuery));
+  app.get("/hive-databases", (req, res) => middleware(req, res, databases));
+  app.get("/hive-databases-details", (req, res) =>
+    middleware(req, res, databasesDetails)
+  );
+  app.get("/hive-database-details", (req, res) =>
+    middleware(req, res, databaseDetails)
+  );
 };
