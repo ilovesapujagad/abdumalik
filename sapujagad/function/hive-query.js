@@ -23,12 +23,16 @@ exports.handler = async ({ app, context, callback }) => {
   // split dbQuery into array by new line / \n
   var dbQueries = dbQuery.split("\n");
 
-  if (dbQueries.length > 1) {
-    return callback(null, {
-      statusCode: 400,
-      message: "Hive : Failed to execute query, Only one query is allowed.",
-    });
-  }
+  var lastQuery = dbQueries[dbQueries.length - 1];
+
+  dbQuery = lastQuery;
+
+  // if (dbQueries.length > 1) {
+  //   return callback(null, {
+  //     statusCode: 400,
+  //     message: "Hive : Failed to execute query, Only one query is allowed.",
+  //   });
+  // }
 
   var dbQueryOld = dbQuery;
   let pagination;
