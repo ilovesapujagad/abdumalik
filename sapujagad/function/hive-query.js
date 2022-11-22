@@ -15,13 +15,20 @@ exports.handler = async ({ app, context, callback }) => {
 
   const { body } = context;
   var { dbName, dbQuery, page } = body;
-  console.log(
-    "🚀 ~ file: hive-query.js ~ line 18 ~ exports.handler= ~ dbQuery",
-    dbQuery
-  );
 
   // split dbQuery into array by new line / \n
   var dbQueries = dbQuery.split("\n");
+
+  // check if query not contain ; at the end of the query join with space + next query and remove the ; from the end of the query
+  for (var i = 0; i < dbQueries.length; i++) {
+    if (dbQueries[i].slice(-1) == ";") {
+      dbQueries[i] = dbQueries[i].slice(0, -1);
+    }
+    if (dbQueries[i + 1] != undefined) {
+      dbQueries[i] = dbQueries[i] + " " + dbQueries[i + 1];
+      dbQueries.splice(i + 1, 1);
+    }
+  }
 
   // check ; at the end of each query and remove it
   dbQueries.forEach((query, index) => {
@@ -93,7 +100,7 @@ exports.handler = async ({ app, context, callback }) => {
     offset = dbQuery.toUpperCase().split("OFFSET")[1].trim();
   }
 
-  console.log(page);
+  // console.log(page);
   console.log("Query: " + dbQuery);
 
   if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
