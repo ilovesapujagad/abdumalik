@@ -19,6 +19,13 @@ exports.handler = async ({ app, context, callback }) => {
   // split dbQuery into array by new line / \n
   var dbQueries = dbQuery.split("\n");
 
+  // replace \t with space
+  dbQueries = dbQueries.map((query) => {
+    return query.replace(/\t/g, " ");
+  });
+  // remove empty string
+  dbQueries = dbQueries.filter((query) => query !== "");
+
   // check if query not contain ; at the end of the query join with space + next query and remove the ; from the end of the query
   for (var i = 0; i < dbQueries.length; i++) {
     if (dbQueries[i].slice(-1) == ";") {
