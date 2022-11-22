@@ -23,7 +23,16 @@ exports.handler = async ({ app, context, callback }) => {
   // split dbQuery into array by new line / \n
   var dbQueries = dbQuery.split("\n");
 
-  var lastQuery = dbQueries[dbQueries.length - 1];
+  // check ; at the end of each query and remove it
+  dbQueries.forEach((query, index) => {
+    if (query.slice(-1) === ";") {
+      dbQueries[index] = query.slice(0, -1);
+    }
+  });
+
+  var lastQuery = dbQueries[dbQueries.length - 1]
+    ? dbQueries[dbQueries.length - 1]
+    : dbQueries[dbQueries.length - 2];
 
   dbQuery = lastQuery;
 
