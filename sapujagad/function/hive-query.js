@@ -16,6 +16,17 @@ exports.handler = async ({ app, context, callback }) => {
   const { body } = context;
   var { dbName, dbQuery, page } = body;
 
+  // dbQuery add \n after not ; inside string
+  dbQuery = dbQuery.replace(/;/g, ";\n");
+
+  // multi \n to single \n
+  dbQuery = dbQuery.replace(/\n+/g, "\n");
+
+  // if last char is not ; add ;
+  if (dbQuery.slice(-1) !== ";") {
+    dbQuery = dbQuery + ";";
+  }
+
   // split dbQuery into array by new line / \n
   var dbQueries = dbQuery.split("\n");
 
@@ -26,23 +37,36 @@ exports.handler = async ({ app, context, callback }) => {
   // remove empty string
   dbQueries = dbQueries.filter((query) => query !== "");
 
-  // check if query not contain ; at the end of the query join with space + next query and remove the ; from the end of the query
-  for (var i = 0; i < dbQueries.length; i++) {
-    if (dbQueries[i].slice(-1) == ";") {
-      dbQueries[i] = dbQueries[i].slice(0, -1);
+  let newDbQueries = [];
+
+  // check if query not contain ; at the end of the query join with space + next query and join with space + next query until founds ; and remove the ; from the end of the query
+
+  for (let i = 0; i < dbQueries.length; i++) {
+    // recursive function to check if query not contain ; at the end of the query join with space + next query and join with space + next query until founds ; and remove the ; from the end of the query
+    function checkQuery(query) {
+      if (query[query.length - 1] !== ";") {
+        query = query + " " + dbQueries[i + 1];
+        i++;
+        return checkQuery(query);
+      } else {
+        return query.slice(0, -1);
+      }
     }
-    if (dbQueries[i + 1] != undefined) {
-      dbQueries[i] = dbQueries[i] + " " + dbQueries[i + 1];
-      dbQueries.splice(i + 1, 1);
-    }
+    newDbQueries.push(checkQuery(dbQueries[i]));
   }
 
-  // check ; at the end of each query and remove it
-  dbQueries.forEach((query, index) => {
-    if (query.slice(-1) === ";") {
-      dbQueries[index] = query.slice(0, -1);
-    }
-  });
+  // newDbQueries delete empty string
+  newDbQueries = newDbQueries.filter((query) => query !== "");
+  dbQueries = newDbQueries;
+
+  console.log("newDbQueries", newDbQueries);
+
+  // // check ; at the end of each query and remove it
+  // dbQueries.forEach((query, index) => {
+  //   if (query.slice(-1) === ";") {
+  //     dbQueries[index] = query.slice(0, -1);
+  //   }
+  // });
 
   var lastQuery = dbQueries[dbQueries.length - 1]
     ? dbQueries[dbQueries.length - 1]
