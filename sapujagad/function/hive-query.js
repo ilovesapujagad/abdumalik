@@ -131,9 +131,6 @@ exports.handler = async ({ app, context, callback }) => {
     offset = dbQuery.toUpperCase().split("OFFSET")[1].trim();
   }
 
-  // console.log(page);
-  console.log("Query: " + dbQuery);
-
   if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
     return callback(null, {
       statusCode: 400,
@@ -178,6 +175,9 @@ exports.handler = async ({ app, context, callback }) => {
   // var dbName = "gg";
   // var dbQuery = "SELECT * FROM gg2022_2023 LIMIT 10";
 
+  // console.log(page);
+  console.log("Query: " + dbQuery);
+
   // dinamically saved in the mg table
   client
     .connect(
@@ -197,50 +197,81 @@ exports.handler = async ({ app, context, callback }) => {
           TCLIService_types.TProtocolVersion.HIVE_CLI_SERVICE_PROTOCOL_V10,
       });
 
+      console.log("dbName: " + dbName);
+
       try {
         const useDb = await session.executeStatement(`USE ${dbName}`);
         await utils.waitUntilReady(useDb, false, () => {});
         await utils.fetchAll(useDb);
 
-        const operation = await session.executeStatement(dbQuery);
-        await utils.waitUntilReady(operation, false, () => {});
-        await utils.fetchAll(operation);
+        console.log("useDb", utils.getResult(useDb).getValue());
 
-        // console.log(utils.getResult(operation).getValue());
+        try {
+          const operation = await session.executeStatement(dbQuery);
+          console.log(
+            "🚀 ~ file: hive-query.js ~ line 211 ~ .then ~ operation",
+            operation
+          );
+          await utils.waitUntilReady(operation, false, () => {
+            console.log("operation", operation);
+          });
+          await utils.fetchAll(operation);
 
-        await useDb.close();
-        await operation.close();
-        await session.close();
+          // var logOp = utils.getResult(operation).getValue();
 
-        if (
-          utils.getResult(operation).getValue() &&
-          utils.getResult(operation).getValue().constructor === Array
-        ) {
-          if (query != "SELECT") {
+          console.log("operation", utils.getResult(operation).getValue());
+
+          // wait about 10 seconds if !operation
+          if (!operation) {
+            setTimeout(() => {
+              return callback(null, {
+                statusCode: 400,
+                message: "Hive : Failed to execute query",
+              });
+            }, 10000);
+          }
+
+          await useDb.close();
+          await operation.close();
+          await session.close();
+
+          if (
+            utils.getResult(operation).getValue() &&
+            utils.getResult(operation).getValue().constructor === Array
+          ) {
+            if (query != "SELECT") {
+              return callback(null, {
+                statusCode: 200,
+                numFound: utils.getResult(operation).getValue().length,
+                query: dbQueryOld,
+                results: utils.getResult(operation).getValue(),
+              });
+            }
+
             return callback(null, {
               statusCode: 200,
               numFound: utils.getResult(operation).getValue().length,
               query: dbQueryOld,
+              limit: 50,
+              offset: offset,
+              currPage: pagination,
               results: utils.getResult(operation).getValue(),
             });
           }
 
           return callback(null, {
             statusCode: 200,
-            numFound: utils.getResult(operation).getValue().length,
             query: dbQueryOld,
-            limit: 50,
-            offset: offset,
-            currPage: pagination,
-            results: utils.getResult(operation).getValue(),
+            message: query + " success",
+          });
+        } catch (error) {
+          console.log("error", error);
+          return callback(null, {
+            statusCode: 400,
+            query: dbQueryOld,
+            message: error.message,
           });
         }
-
-        return callback(null, {
-          statusCode: 200,
-          query: dbQueryOld,
-          message: query + " success",
-        });
       } catch (error) {
         var errMsg = error.message;
         var msg =

@@ -71,6 +71,14 @@ exports.handler = async ({ app, context, callback }) => {
 
         var tables = utils.getResult(showTables).getValue();
 
+        if (!tables.length) {
+          return callback(null, {
+            statusCode: 200,
+            message: "No tables found",
+            results: databaseDetails,
+          });
+        }
+
         tables.map(async (table, indexTab, rowTab) => {
           const descTable = await session.executeStatement(
             "SHOW COLUMNS IN " + table.tab_name
