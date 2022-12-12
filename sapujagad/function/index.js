@@ -6,6 +6,7 @@ const hiveQuery = require("./hive-query");
 const databasesDetails = require("./databases-details");
 const databaseDetails = require("./database-details");
 const databases = require("./databases");
+const beelineQuery = require("./beeline-query");
 
 class FunctionEvent {
   constructor(req) {
@@ -65,4 +66,5 @@ exports.handler = (app) => {
   app.get("/hive-database-details", (req, res) =>
     middleware(req, res, databaseDetails)
   );
+  app.post("/beeline-query", (req, res) => middleware(req, res, beelineQuery));
 };
