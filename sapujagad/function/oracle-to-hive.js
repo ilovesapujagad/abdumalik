@@ -7,80 +7,80 @@
  * callback(error, response)
  */
 
- const { NodeSSH } = require("node-ssh");
- var CryptoJS = require("crypto-js");
- 
- exports.handler = async ({ app, context, callback }) => {
-   const { query } = context;
-   console.log("query", query.secret);
- 
-   if (!query.secret || query.secret != "OncnCjYynKaYmuQ1cVjlHneqhmQRcjb") {
-     console.log("secret not match");
-     return callback(null, {
-       status: 403,
-       message: "Forbidden",
-     });
-   }
- 
-   // funct generate random string
-   function makeid(length) {
-     var result = "";
-     var characters =
-       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-     var charactersLength = characters.length;
-     for (var i = 0; i < length; i++) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-     }
-     return result;
-   }
- 
-   var secretKey = "12345678901234567890123456789012";
-   const ssh = new NodeSSH();
- 
-   // date format YYYY-MM-DD
-   function getDate(date) {
-     const year = date.getFullYear();
-     const month = date.getMonth() + 1;
-     const day = date.getDate();
-     console.log(`${year}-${month}-${day}`);
-     return `${year}-${month}-${day}`;
-   }
- 
-   // start date = yesterday first second
-   var startDate = getDate(
-     new Date(new Date().setDate(new Date().getDate() - 1))
-   );
- 
-   // end date = yesterday last second
-   var dueDate = getDate(new Date(new Date().setDate(new Date().getDate() - 1)));
- 
-   var m = 1;
- 
-   // Decrypt
-   function decrypt(text) {
-     var bytes = CryptoJS.AES.decrypt(text, secretKey);
-     var originalText = bytes.toString(CryptoJS.enc.Utf8);
-     return originalText;
-   }
- 
-   // console.log(app.env);
- 
-   var db_ip = decrypt("U2FsdGVkX196GEYWBS2d6sKT7fK3zFtQiUn72nxKYHI=");
-   var db_user = decrypt("U2FsdGVkX18bG3piiQ25ImgPAPeKqRnM+7a6ARlQwuc=");
-   var db_password = decrypt("U2FsdGVkX19rnLkBKG66xkp70U/tjtuYK7ghiZIL9XE=");
-   var db_port = decrypt("U2FsdGVkX18Ub78E/WDdlIpeb79Vf6PGGNL8eVRKjBw=");
-   var db_name = decrypt("U2FsdGVkX1/qEICWdOk4tDBrpV0uhlsDT3fkgGk5Vdw=");
- 
-   var vm_ip = decrypt("U2FsdGVkX18OuoXStwyjHc/1LMtZEHUufle9empVyyI=");
-   var vm_user = decrypt("U2FsdGVkX1+cr47RXl5u6ru+KnwfKP4epjXLlIK66/k=");
-   var vm_password = decrypt("U2FsdGVkX1/H15u4rMR9MCjrsk7ogAys1HDm/zC0Jcg=");
- 
-   var targetDir = "/user/apps";
- 
-   // console.log("DB", db_ip, db_user, db_password, db_port, db_name);
-   // console.log("VM", vm_ip, vm_user, vm_password);
- 
-   var scoopCmd = `sqoop import \
+const { NodeSSH } = require("node-ssh");
+var CryptoJS = require("crypto-js");
+
+exports.handler = async ({ app, context, callback }) => {
+  const { query } = context;
+  console.log("query", query.secret);
+
+  if (!query.secret || query.secret != "OncnCjYynKaYmuQ1cVjlHneqhmQRcjb") {
+    console.log("secret not match");
+    return callback(null, {
+      status: 403,
+      message: "Forbidden",
+    });
+  }
+
+  // funct generate random string
+  function makeid(length) {
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
+  var secretKey = "12345678901234567890123456789012";
+  const ssh = new NodeSSH();
+
+  // date format YYYY-MM-DD
+  function getDate(date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    console.log(`${year}-${month}-${day}`);
+    return `${year}-${month}-${day}`;
+  }
+
+  // start date = yesterday first second
+  var startDate = getDate(
+    new Date(new Date().setDate(new Date().getDate() - 1))
+  );
+
+  // end date = yesterday last second
+  var dueDate = getDate(new Date(new Date().setDate(new Date().getDate() - 1)));
+
+  var m = 1;
+
+  // Decrypt
+  function decrypt(text) {
+    var bytes = CryptoJS.AES.decrypt(text, secretKey);
+    var originalText = bytes.toString(CryptoJS.enc.Utf8);
+    return originalText;
+  }
+
+  // console.log(app.env);
+
+  var db_ip = decrypt("U2FsdGVkX196GEYWBS2d6sKT7fK3zFtQiUn72nxKYHI=");
+  var db_user = decrypt("U2FsdGVkX18bG3piiQ25ImgPAPeKqRnM+7a6ARlQwuc=");
+  var db_password = decrypt("U2FsdGVkX19rnLkBKG66xkp70U/tjtuYK7ghiZIL9XE=");
+  var db_port = decrypt("U2FsdGVkX18Ub78E/WDdlIpeb79Vf6PGGNL8eVRKjBw=");
+  var db_name = decrypt("U2FsdGVkX1/qEICWdOk4tDBrpV0uhlsDT3fkgGk5Vdw=");
+
+  var vm_ip = decrypt("U2FsdGVkX18OuoXStwyjHc/1LMtZEHUufle9empVyyI=");
+  var vm_user = decrypt("U2FsdGVkX1+cr47RXl5u6ru+KnwfKP4epjXLlIK66/k=");
+  var vm_password = decrypt("U2FsdGVkX1/H15u4rMR9MCjrsk7ogAys1HDm/zC0Jcg=");
+
+  var targetDir = "/user/apps";
+
+  // console.log("DB", db_ip, db_user, db_password, db_port, db_name);
+  // console.log("VM", vm_ip, vm_user, vm_password);
+
+  var scoopCmd = `sqoop import \
    --connect jdbc:oracle:thin:@//${db_ip}:${db_port}/${db_name} \
    --username ${db_user} \
    --password ${db_password} \
@@ -153,66 +153,65 @@
    --hive-import \
    --hive-database gg \
    --hive-table gjh2`;
-   // console.log("scoopCmd", scoopCmd);
- 
-   var chunkI = 0;
- 
-   try {
-     ssh
-       .connect({
-         host: vm_ip,
-         username: vm_user,
-         // privateKey: Buffer.from("..."),
-         password: vm_password,
-       })
-       .then(function () {
-         // Command
-         ssh
-           .execCommand(`sudo -Hu hive ${scoopCmd}`, {
-             // onStdout(chunk) {
-             //   console.log("STDOUT:", chunk.toString("utf8"));
-             //   if (chunkI == 0) {
-             //     callback(null, {
-             //       statusCode: 200,
-             //       message: "Importing...",
-             //     });
-             //   }
-             //   chunkI++;
-             // },
-             onStderr(chunk) {
-               console.log("STDERR:", chunk.toString("utf8"));
-               if (chunkI == 0) {
-                 callback(null, {
-                   statusCode: 200,
-                   message: "Importing...",
-                 });
-               }
-               chunkI++;
-             },
-           })
-           .then(function (result) {
-             if (result.stderr) {
-               console.log("stderr: " + result.stderr);
-               if (chunkI == 0) {
-                 callback(null, {
-                   statusCode: 400,
-                   body: result.stdout,
-                 });
-               }
-             }
-             console.log("STDOUT: " + result.stdout);
-             // callback(null, {
-             //   statusCode: 200,
-             //   body: result.stdout,
-             // });
-           });
-       });
-   } catch (error) {
-     console.log(error);
-     callback(null, {
-       statusCode: 400,
-       body: error,
-     });
-   }
- };
- 
+  // console.log("scoopCmd", scoopCmd);
+
+  var chunkI = 0;
+
+  try {
+    ssh
+      .connect({
+        host: vm_ip,
+        username: vm_user,
+        // privateKey: Buffer.from("..."),
+        password: vm_password,
+      })
+      .then(function () {
+        // Command
+        ssh
+          .execCommand(`sudo -Hu hive ${scoopCmd}`, {
+            // onStdout(chunk) {
+            //   console.log("STDOUT:", chunk.toString("utf8"));
+            //   if (chunkI == 0) {
+            //     callback(null, {
+            //       statusCode: 200,
+            //       message: "Importing...",
+            //     });
+            //   }
+            //   chunkI++;
+            // },
+            onStderr(chunk) {
+              console.log("STDERR:", chunk.toString("utf8"));
+              if (chunkI == 0) {
+                callback(null, {
+                  statusCode: 200,
+                  message: "Importing...",
+                });
+              }
+              chunkI++;
+            },
+          })
+          .then(function (result) {
+            if (result.stderr) {
+              console.log("stderr: " + result.stderr);
+              if (chunkI == 0) {
+                callback(null, {
+                  statusCode: 400,
+                  body: result.stdout,
+                });
+              }
+            }
+            console.log("STDOUT: " + result.stdout);
+            // callback(null, {
+            //   statusCode: 200,
+            //   body: result.stdout,
+            // });
+          });
+      });
+  } catch (error) {
+    console.log(error);
+    callback(null, {
+      statusCode: 400,
+      body: error,
+    });
+  }
+};
