@@ -176,7 +176,7 @@ exports.handler = async ({ app, context, callback }) => {
       (pagination - 1) * 50;
     offset = (pagination - 1) * 50;
   } else if (query == "SELECT") {
-    dbQuery = dbQuery + " LIMIT 50 " + " OFFSET " + (pagination - 1) * 50;
+    dbQuery = dbQuery + " LIMIT 50 OFFSET " + (pagination - 1) * 50;
   }
 
   // var dbName = "gg";
