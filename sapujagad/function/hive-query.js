@@ -92,6 +92,8 @@ exports.handler = async ({ app, context, callback }) => {
     pagination = parseInt(page);
   }
 
+  var totalPage = 1;
+
   if (!dbName || !dbQuery) {
     return callback(null, {
       statusCode: 400,
@@ -133,15 +135,15 @@ exports.handler = async ({ app, context, callback }) => {
     offset = dbQuery.toUpperCase().split("OFFSET")[1].trim();
   }
 
-  if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
-    return callback(null, {
-      statusCode: 400,
-      query: dbQueryOld,
-      offset: offset,
-      page: page,
-      message: "Pagination is not allowed for this query",
-    });
-  }
+  // if (page && dbQuery.toUpperCase().includes(" OFFSET ")) {
+  //   return callback(null, {
+  //     statusCode: 400,
+  //     query: dbQueryOld,
+  //     offset: offset,
+  //     page: page,
+  //     message: "Pagination is not allowed for this query",
+  //   });
+  // }
 
   if (query == "SELECT COUNT") {
     console.log("SELECT COUNT");
@@ -161,10 +163,13 @@ exports.handler = async ({ app, context, callback }) => {
       dbQuery.replace(replaceOffset, "").replace(replaceOffsetUpper, "") +
       " LIMIT 50 OFFSET " +
       offset;
+
+      totalPage = Math.ceil(limit / 50);
   } else if (
-    ((query == "SELECT" && !dbQuery.toUpperCase().includes(" LIMIT ")) ||
-      (limit > 50 && query == "SELECT")) &&
-    !dbQuery.toUpperCase().includes(" OFFSET ")
+    (query == "SELECT" && !dbQuery.toUpperCase().includes(" LIMIT ")) ||
+    (limit > 50 && query == "SELECT")
+    //   &&
+    // !dbQuery.toUpperCase().includes(" OFFSET ")
   ) {
     console.log("Includes limit");
     var replaceLimit = `limit ${limit}`;
@@ -176,7 +181,9 @@ exports.handler = async ({ app, context, callback }) => {
       " OFFSET " +
       (pagination - 1) * 50;
     offset = (pagination - 1) * 50;
-  } 
+
+    totalPage = Math.ceil(limit / 50);
+  }
   // else if (query == "SELECT") {
   //   dbQuery = dbQuery + " LIMIT 50 OFFSET " + (pagination - 1) * 50;
   // }
@@ -332,6 +339,7 @@ exports.handler = async ({ app, context, callback }) => {
                 limit: 50,
                 offset: offset,
                 currPage: pagination,
+                totalPage: totalPage,
                 results: utils.getResult(operation).getValue(),
               });
             }
