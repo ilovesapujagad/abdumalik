@@ -176,9 +176,10 @@ exports.handler = async ({ app, context, callback }) => {
       " OFFSET " +
       (pagination - 1) * 50;
     offset = (pagination - 1) * 50;
-  } else if (query == "SELECT") {
-    dbQuery = dbQuery + " LIMIT 50 OFFSET " + (pagination - 1) * 50;
-  }
+  } 
+  // else if (query == "SELECT") {
+  //   dbQuery = dbQuery + " LIMIT 50 OFFSET " + (pagination - 1) * 50;
+  // }
 
   // var dbName = "gg";
   // var dbQuery = "SELECT * FROM gg2022_2023 LIMIT 10";
