@@ -154,7 +154,7 @@ exports.handler = async ({ app, context, callback }) => {
     // apply pagination to the query 50 rows per page
     dbQuery =
       dbQuery.replace(replaceOffset, "").replace(replaceOffsetUpper, "") +
-      " LIMIT 50 OFFSET" +
+      " LIMIT 50 OFFSET " +
       offset;
   }
 
