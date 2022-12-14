@@ -157,9 +157,7 @@ exports.handler = async ({ app, context, callback }) => {
       dbQuery.replace(replaceOffset, "").replace(replaceOffsetUpper, "") +
       " LIMIT 50 OFFSET " +
       offset;
-  }
-
-  if (
+  } else if (
     ((query == "SELECT" && !dbQuery.toUpperCase().includes(" LIMIT ")) ||
       (limit > 50 && query == "SELECT")) &&
     !dbQuery.toUpperCase().includes(" OFFSET ")
@@ -174,6 +172,8 @@ exports.handler = async ({ app, context, callback }) => {
       " OFFSET " +
       (pagination - 1) * 50;
     offset = (pagination - 1) * 50;
+  } else {
+    dbQuery = dbQuery + " LIMIT 50 OFFSET " + (pagination - 1) * 50;
   }
 
   // var dbName = "gg";
