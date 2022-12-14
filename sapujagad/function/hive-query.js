@@ -149,12 +149,13 @@ exports.handler = async ({ app, context, callback }) => {
   ) {
     var replaceOffset = `offset ${offset}`;
     var replaceOffsetUpper = ` OFFSET ${offset} `;
+
+    offset = (pagination - 1) * 50;
     // apply pagination to the query 50 rows per page
     dbQuery =
       dbQuery.replace(replaceOffset, "").replace(replaceOffsetUpper, "") +
-      " LIMIT 50";
-
-    offset = (pagination - 1) * 50;
+      " LIMIT 50 OFFSET" +
+      offset;
   }
 
   if (
