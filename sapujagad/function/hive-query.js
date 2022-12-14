@@ -17,6 +17,8 @@ exports.handler = async ({ app, context, callback }) => {
   const { body } = context;
   var { dbName, dbQuery, page } = body;
 
+  var totalPage = 1;
+
   // dbQuery add \n after not ; inside string
   dbQuery = dbQuery.replace(/;/g, ";\n");
 
@@ -91,8 +93,6 @@ exports.handler = async ({ app, context, callback }) => {
     // pagination = page to int
     pagination = parseInt(page);
   }
-
-  var totalPage = 1;
 
   if (!dbName || !dbQuery) {
     return callback(null, {
