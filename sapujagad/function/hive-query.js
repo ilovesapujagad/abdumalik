@@ -100,6 +100,7 @@ exports.handler = async ({ app, context, callback }) => {
   }
 
   var hiveQueries = [
+    "SELECT COUNT",
     "USE",
     "SELECT",
     "INSERT",
@@ -142,7 +143,9 @@ exports.handler = async ({ app, context, callback }) => {
     });
   }
 
-  if (
+  if ((query = "SELECT COUNT")) {
+    console.log("SELECT COUNT");
+  } else if (
     ((query == "SELECT" && !dbQuery.toUpperCase().includes(" OFFSET ")) ||
       (limit > 50 && query == "SELECT")) &&
     dbQuery.toUpperCase().includes(" OFFSET ")
@@ -172,7 +175,7 @@ exports.handler = async ({ app, context, callback }) => {
       " OFFSET " +
       (pagination - 1) * 50;
     offset = (pagination - 1) * 50;
-  } else {
+  } else if (query == "SELECT") {
     dbQuery = dbQuery + " OFFSET " + (pagination - 1) * 50;
   }
 
