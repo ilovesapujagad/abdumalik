@@ -173,7 +173,7 @@ exports.handler = async ({ app, context, callback }) => {
       (pagination - 1) * 50;
     offset = (pagination - 1) * 50;
   } else {
-    dbQuery = dbQuery + " LIMIT 50 OFFSET " + (pagination - 1) * 50;
+    dbQuery = dbQuery + " OFFSET " + (pagination - 1) * 50;
   }
 
   // var dbName = "gg";
