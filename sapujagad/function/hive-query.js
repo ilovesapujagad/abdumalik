@@ -147,6 +147,7 @@ exports.handler = async ({ app, context, callback }) => {
       (limit > 50 && query == "SELECT")) &&
     dbQuery.toUpperCase().includes(" OFFSET ")
   ) {
+    console.log("Includes offset");
     var replaceOffset = `offset ${offset}`;
     var replaceOffsetUpper = ` OFFSET ${offset} `;
 
@@ -163,6 +164,7 @@ exports.handler = async ({ app, context, callback }) => {
       (limit > 50 && query == "SELECT")) &&
     !dbQuery.toUpperCase().includes(" OFFSET ")
   ) {
+    console.log("Includes limit");
     var replaceLimit = `limit ${limit}`;
     var replaceLimitUpper = ` LIMIT ${limit} `;
     // apply pagination to the query 50 rows per page
