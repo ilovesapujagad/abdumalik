@@ -143,9 +143,9 @@ exports.handler = async ({ app, context, callback }) => {
     });
   }
 
-  if ((query = "SELECT COUNT")) {
+  if (query == "SELECT COUNT") {
     console.log("SELECT COUNT");
-    dbQuery = dbQuery + " LIMIT 50 OFFSET " + (pagination - 1) * 50;
+    // dbQuery = dbQuery + " LIMIT 50 OFFSET " + (pagination - 1) * 50;
   } else if (
     ((query == "SELECT" && !dbQuery.toUpperCase().includes(" OFFSET ")) ||
       (limit > 50 && query == "SELECT")) &&
