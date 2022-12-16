@@ -30,7 +30,7 @@ exports.handler = async ({ app, context, callback }) => {
   client
     .connect(
       {
-        host: "10.10.65.1",
+        host: "10.207.26.20",
         port: 10000,
       },
       new hive.connections.TcpConnection(),
