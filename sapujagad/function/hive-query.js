@@ -94,11 +94,13 @@ exports.handler = async ({ app, context, callback }) => {
     pagination = parseInt(page);
   }
 
-  if (!dbName || !dbQuery) {
-    return callback(null, {
-      statusCode: 400,
-      message: "dbName and dbQuery are required",
-    });
+  if (!dbQuery.toUpperCase().includes("CREATE DATABASE")) {
+    if (!dbQuery || !dbName) {
+      return callback(null, {
+        statusCode: 400,
+        message: "dbName and dbQuery are required",
+      });
+    }
   }
 
   var hiveQueries = [
@@ -164,7 +166,7 @@ exports.handler = async ({ app, context, callback }) => {
       " LIMIT 50 OFFSET " +
       offset;
 
-      totalPage = Math.ceil(limit / 50);
+    totalPage = Math.ceil(limit / 50);
   } else if (
     (query == "SELECT" && !dbQuery.toUpperCase().includes(" LIMIT ")) ||
     (limit > 50 && query == "SELECT")
