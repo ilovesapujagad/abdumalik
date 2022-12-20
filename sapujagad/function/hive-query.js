@@ -293,11 +293,12 @@ exports.handler = async ({ app, context, callback }) => {
         console.log("dbName: " + dbName);
 
         try {
-          const useDb = await session.executeStatement(`USE ${dbName}`);
-          await utils.waitUntilReady(useDb, false, () => {});
-          await utils.fetchAll(useDb);
-
-          console.log("useDb", utils.getResult(useDb).getValue());
+          if (!dbQuery.toUpperCase().includes("CREATE DATABASE")) {
+            const useDb = await session.executeStatement(`USE ${dbName}`);
+            await utils.waitUntilReady(useDb, false, () => {});
+            await utils.fetchAll(useDb);
+            console.log("useDb", utils.getResult(useDb).getValue());
+          }
 
           try {
             const operation = await session.executeStatement(dbQuery);
