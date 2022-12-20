@@ -101,6 +101,13 @@ exports.handler = async ({ app, context, callback }) => {
         message: "dbName and dbQuery are required",
       });
     }
+  } else {
+    if (!dbQuery) {
+      return callback(null, {
+        statusCode: 400,
+        message: "dbQuery is required",
+      });
+    }
   }
 
   var hiveQueries = [
