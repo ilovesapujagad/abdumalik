@@ -75,7 +75,7 @@ exports.handler = async ({ app, context, callback }) => {
   var vm_user = decrypt("U2FsdGVkX1+cr47RXl5u6ru+KnwfKP4epjXLlIK66/k=");
   var vm_password = decrypt("U2FsdGVkX1/H15u4rMR9MCjrsk7ogAys1HDm/zC0Jcg=");
 
-  var targetDir = "/user/apps";
+  var targetDir = "/user/kayangan";
 
   // console.log("DB", db_ip, db_user, db_password, db_port, db_name);
   // console.log("VM", vm_ip, vm_user, vm_password);
@@ -148,7 +148,7 @@ exports.handler = async ({ app, context, callback }) => {
    AND GJH.CREATED_BY = FU.USER_ID
    AND GJH.STATUS = 'P'
    AND trunc(GJH.CREATION_DATE) between to_date('${startDate}', 'YYYY-MM-DD') and to_date('${dueDate}', 'YYYY-MM-DD') AND \\$CONDITIONS" \
-   --target-dir /user/apps/hive/${makeid(16)} \
+   --target-dir /user/kayangan/hive/${makeid(16)} \
    -m ${m} \
    --hive-import \
    --hive-database gg \
