@@ -63,7 +63,7 @@ exports.handler = async ({ app, context, callback }) => {
   var vm_user = decrypt("U2FsdGVkX1+cr47RXl5u6ru+KnwfKP4epjXLlIK66/k=");
   var vm_password = decrypt("U2FsdGVkX1/H15u4rMR9MCjrsk7ogAys1HDm/zC0Jcg=");
 
-  var targetDir = "/user/apps";
+  var targetDir = "/user/kayangan";
 
   // console.log("DB", db_ip, db_user, db_password, db_port, db_name);
   // console.log("VM", vm_ip, vm_user, vm_password);

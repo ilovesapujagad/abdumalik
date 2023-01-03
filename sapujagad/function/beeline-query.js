@@ -183,13 +183,13 @@ exports.handler = async ({ app, context, callback }) => {
     return originalText;
   }
 
-  var vm_ip = "10.207.16.20";
-  var vm_user = "apps";
-  var vm_password = "apps247";
+  var vm_ip = "10.10.65.1";
+  var vm_user = "sapujagad";
+  var vm_password = "kayangan";
 
-  //   var command="beeline -u jdbc:hive2://10.207.26.20:10000  -n hive -p hive -e 'select * from "+dbName+"."+dbQuery+" limit 10'";
+  //   var command="beeline -u jdbc:hive2://10.10.65.1:10000  -n hive -p hive -e 'select * from "+dbName+"."+dbQuery+" limit 10'";
   var command =
-    "beeline -u jdbc:hive2://10.207.26.20:10000 -n hive -p hive -e 'use " +
+    "beeline -u jdbc:hive2://10.10.65.1:10000 -n hive -p hive -e 'use " +
     dbName +
     ";'";
 
