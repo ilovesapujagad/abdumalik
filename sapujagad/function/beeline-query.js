@@ -189,7 +189,7 @@ exports.handler = async ({ app, context, callback }) => {
 
   //   var command="beeline -u jdbc:hive2://10.10.65.1:10000  -n hive -p hive -e 'select * from "+dbName+"."+dbQuery+" limit 10'";
   var command =
-    "beeline -u jdbc:hive2://10.10.65.1:10000 -n hive -p hive -e 'use " +
+    "beeline -u jdbc:hive2://10.10.65.3:10500 -n hive -p hive -e 'use " +
     dbName +
     ";'";
 

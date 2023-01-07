@@ -37,8 +37,8 @@ exports.handler = async ({ app, context, callback }) => {
   client
     .connect(
       {
-        host: "10.10.65.1",
-        port: 10000,
+        host: "10.10.65.3",
+        port: 10500,
       },
       new hive.connections.TcpConnection(),
       new hive.auth.PlainTcpAuthentication({
